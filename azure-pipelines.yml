@@ -8,12 +8,48 @@ trigger:
 
 pool:
   vmImage: ubuntu-latest
+  
+stages:
+  - stage: TerraformValidate
+    jobs:
+    - job: TerraformValidateJob
+      continueOnError: false
+      
+      steps:
+      - task: PublishPipelineArtifact@1
+        displayName: Publish Artifacts
+        inputs:
+          targetPath: '$(System.DefaultWorkingDirectory)/AKS_TERRAFORM'
+          artifact: 'terraform-manifests-out'
+          publishLocation: 'pipeline'
+      - task: TerraformInstaller@1
+        displayName: Terraform Install
+        inputs:
+          terraformVersion: 'latest'
+      - task: TerraformTaskV4@4
+        inputs:
+          provider: 'azurerm'
+          command: 'init'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/AKS_TERRAFORM'
+          backendServiceArm: 'Pay-As-You-Go(efbc1e1f-72e7-41b7-b61b-af618f7575c4)'
+          backendAzureRmResourceGroupName: 'devopsrg'
+          backendAzureRmStorageAccountName: 'backendstorageterra'
+          backendAzureRmContainerName: 'statecont'
+          backendAzureRmKey: 'aks.tfstate'
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+      - task: TerraformTaskV4@4
+        inputs:
+          provider: 'azurerm'
+          command: 'plan'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/AKS_TERRAFORM'
+          environmentServiceNameAzureRM: 'Pay-As-You-Go(efbc1e1f-72e7-41b7-b61b-af618f7575c4)'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+      - task: TerraformTaskV4@4
+        inputs:
+          provider: 'azurerm'
+          command: 'apply'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/AKS_TERRAFORM'
+          environmentServiceNameAzureRM: 'Pay-As-You-Go(efbc1e1f-72e7-41b7-b61b-af618f7575c4)'
+      
+
+
