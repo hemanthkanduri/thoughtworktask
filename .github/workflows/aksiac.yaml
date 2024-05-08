@@ -22,10 +22,10 @@ jobs:
       with:
         terraform_version: 1.6.6
 
-      # - name: 'Az CLI login'
-      # uses: azure/login@v1
-      #with:
-      #creds: '${{ secrets.AZURE_CREDENTIALS }}'
+    - name: 'Az CLI login'
+      uses: azure/login@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
 
     - name: Terraform Init
       id: init
