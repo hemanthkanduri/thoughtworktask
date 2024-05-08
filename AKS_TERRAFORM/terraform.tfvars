@@ -1,5 +1,5 @@
 resource_group_name = "aks_terraform_rg"
-location            = "West Europe"
+location            = "Central India"
 cluster_name        = "terraform-aks-demo"
 kubernetes_version  = "1.28.5"
 system_node_count   = 2
