@@ -34,7 +34,7 @@ jobs:
     - name: 'Terraform Init'
 
 
-      uses: hashicorp/terraform-github-action@master
+      uses: hashicorp/thoughtworktask@main
       with:
         tf_actions_version: 1.6.6
         tf_actions_subcommand: 'init'
