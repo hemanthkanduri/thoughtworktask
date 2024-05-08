@@ -9,6 +9,11 @@ jobs:
   IAC-AKS-deploy:
     name: 'AKS Terraform'
     runs-on: ubuntu-latest
+    env:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
     defaults:
       run:
@@ -18,7 +23,7 @@ jobs:
     steps:
     # Checkout the repository to the GitHub Actions runner
     - name: checkout the code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v2
 
     # Install the preferred version of Terraform CLI 
     - name: setup Terraform
@@ -26,26 +31,16 @@ jobs:
       with:
         terraform_version: 1.6.6
 
-    - name: 'Az CLI login'
-      uses: azure/login@v1
+    - name: 'Terraform Init'
+
+
+      uses: hashicorp/terraform-github-action@master
       with:
-        creds: '${{ secrets.AZURE_CREDENTIALS }}'
-
-    - name: Terraform Init
-
-
-      id: init
-      env:
-        AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-        AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-        AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-        AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-        RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
-        STORAGE_ACCOUNT: ${{ secrets.STORAGE_ACCOUNT }}
-        CONTAINER_NAME: ${{ secrets.CONTAINER_NAME }}
-      run: terraform init -backend-config="storage_account_name=$STORAGE_ACCOUNT" -backend-config="container_name=$CONTAINER_NAME" -backend-config="resource_group_name=$RESOURCE_GROUP"
+        tf_actions_version: 1.6.6
+        tf_actions_subcommand: 'init'
 
     - name: Terraform Plan
+
       id: plan
       env:
         AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
